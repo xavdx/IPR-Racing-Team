@@ -222,6 +222,14 @@ h3{font-size:1.5rem;font-stretch:75%;font-weight:700;letter-spacing:0;line-heigh
 .seg button:hover{background:var(--paper-2);color:var(--violet)}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 canvas.track{display:block;width:100%;height:auto;aspect-ratio:1.45/1}
+.mapwrap{position:relative;overflow:hidden}
+.mapwrap canvas{transition:filter .7s ease,opacity .7s ease}
+.mapwrap.ended canvas{filter:blur(5px);opacity:.55}
+.replay{position:absolute;inset:0;display:grid;place-items:center;opacity:0;visibility:hidden;transform:translateY(8px);transition:opacity .6s ease .15s,transform .6s cubic-bezier(.2,.7,.2,1) .15s,visibility 0s .75s}
+.mapwrap.ended .replay{opacity:1;visibility:visible;transform:none;transition:opacity .6s ease .15s,transform .6s cubic-bezier(.2,.7,.2,1) .15s,visibility 0s}
+.replay .btn{box-shadow:0 18px 40px -18px var(--shadow)}
+.replay .btn svg{width:16px;height:16px}
+.replay .btn:hover svg{transform:rotate(-200deg)}
 .mapfoot{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:1px solid var(--rule)}
 .mapfoot div{padding:10px 14px;display:grid;gap:2px;min-width:0;transition:background-color .25s var(--ease)}
 .mapfoot div:hover{background:var(--paper)}
@@ -653,9 +661,9 @@ var INTRO={
   <div class="hero">
     <div class="wrap">
       <div class="hero-copy">
-        <p class="label">Karting team, founded June 2026</p>
+        <p class="label">Built for drivers, by drivers.</p>
         <h1>It's <span class="x">part of</span> racing.</h1>
-        <p class="lede">A karting team where results come from your lap times, never from money, connections or politics. We race from our own local tracks, and our championship rewards the driver who laps most consistently.</p>
+        <p class="lede">A karting team where results come from your lap times, never from money, connections or politics. We race from our own local tracks and our championship rewards the driver who laps most consistently.</p>
         <div class="cta">
           <a class="btn js-join" href="#entry">Join the team <svg aria-hidden="true"><use href="#ico-arrow"/></svg></a>
           <a class="btn btn-line" href="#lap-test">Run the lap test</a>
@@ -670,7 +678,7 @@ var INTRO={
               <button type="button" id="m-wild" aria-pressed="false">Erratic</button>
             </div>
           </div>
-          <canvas class="track" id="hero-map" aria-label="Track map with ten simulated laps drawn on top of each other"></canvas>
+          <div class="mapwrap" id="h-wrap"><canvas class="track" id="hero-map" aria-label="Track map with ten simulated laps drawn on top of each other"></canvas><div class="replay"><button class="btn" type="button" id="h-replay"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13.5 8a5.5 5.5 0 1 1-1.6-3.9M12.4 1.6v2.9H9.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="h-replay-label">Run the session again</span></button></div></div>
           <div class="mapfoot">
             <div><span class="label">Lap</span><strong id="h-lap">10/10</strong></div>
             <div><span class="label">Lap time</span><strong id="h-time">-</strong></div>
@@ -712,7 +720,7 @@ var INTRO={
           </div>
           <div class="doc-row"><span class="label">Fact</span><div><p>At a rental karting event in 2026, a kart fault that the organisers themselves had confirmed was dismissed with the words "it's part of racing". No requalification was given. Drivers who had paid and travelled to be there were told to accept it.</p></div></div>
           <div class="doc-row"><span class="label">Reason</span><div><p>In rental karting the kart isn't yours, the mechanics aren't yours, and none of the preparation is under your control. Giving every driver a fair kart is the organiser's job.</p><p>Calling a confirmed fault "part of racing" is an excuse.</p></div></div>
-          <div class="doc-row decision"><span class="label">Decision</span><div><p>The excuse is not accepted. IPR Racing was founded in June 2026 to race without it.</p></div></div>
+          <div class="doc-row decision"><span class="label">Decision</span><div><p>The excuse was not accepted. IPR Racing was founded in June 2026 to race without that excuse. The name keeps the phrase on purpose, as a reminder of what we stand against.</p></div></div>
           <div class="stamp" aria-hidden="true">Excuse rejected<small>IPR Race Control</small></div>
         </article>
       </div>
@@ -845,7 +853,7 @@ var INTRO={
 <footer>
   <div class="wrap">
     <svg class="wm" viewBox="0 0 1165.0 326.0" aria-hidden="true"><use href="#ipr-word"/></svg>
-    <span>"It's Part of Racing" Racing Team, founded June 2026</span>
+    <span>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;<b><i>PURSUIT OF THE PERFECT LAP.</i></b></span><span>© 2026 All Rights Reserved.</span>
     <span id="social"></span>
   </div>
 </footer>
@@ -916,13 +924,19 @@ function parseLap(v){
 function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function gauss(r){let u=0,v=0;while(!u)u=r();while(!v)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
 
-//Track: a closed Catmull-Rom spline through a hand-drawn kart circuit
-const CTRL=[[.05,.62],[.06,.24],[.15,.08],[.30,.07],[.38,.20],[.33,.38],[.41,.50],[.55,.46],[.60,.26],[.72,.10],[.88,.09],[.96,.24],[.88,.42],[.74,.50],[.80,.66],[.95,.74],[.93,.92],[.72,.95],[.52,.84],[.34,.94],[.14,.92]];
-function buildTrack(w,h){
-  const xs=CTRL.map(c=>c[0]),ys=CTRL.map(c=>c[1]),mnx=Math.min(...xs),mxx=Math.max(...xs),mny=Math.min(...ys),mxy=Math.max(...ys);
-  const pad=Math.min(w,h)*.11;
-  const P=CTRL.map(([x,y])=>[pad+(x-mnx)/(mxx-mnx)*(w-2*pad),pad+(y-mny)/(mxy-mny)*(h-2*pad)]);
-  const pts=[],n=P.length,per=60;
+//Track maps: centre lines traced from the circuit outlines, as x,y pairs (0 to 1000), starting at the
+//start line and running in the racing direction. hw sets the track width relative to the map.
+const TRACKS={
+  nordschleife:{name:"N\u00fcrburgring Nordschleife",hw:.012,sectors:[.33,.785],pts:[255,664,248,667,240,670,233,672,225,675,218,678,211,681,203,683,196,686,188,689,181,691,173,694,166,697,158,700,151,702,143,705,136,707,128,709,120,708,113,707,105,707,98,710,93,716,87,722,82,728,78,734,77,742,78,750,78,758,77,765,72,769,64,771,56,772,48,773,41,775,33,777,26,780,19,783,11,784,4,783,0,778,1,771,7,766,13,761,20,757,27,754,33,749,39,743,43,737,48,730,53,724,58,718,63,712,68,706,73,700,75,693,72,686,70,679,70,672,73,665,79,660,86,656,93,652,100,649,107,645,114,641,122,639,129,638,137,639,145,641,153,643,161,644,168,645,176,645,184,645,192,643,200,643,208,643,215,644,222,643,224,638,222,631,217,627,210,627,203,628,195,629,187,628,180,625,173,621,167,616,160,611,153,608,146,606,138,604,130,601,124,597,120,590,118,583,115,575,113,568,109,561,103,557,96,554,90,549,87,543,86,535,83,527,80,520,76,514,71,507,67,500,64,493,60,486,58,479,55,471,53,464,50,456,49,448,48,440,47,432,48,425,50,417,53,410,57,403,62,397,67,391,73,386,79,380,84,374,88,367,92,360,94,353,95,345,96,337,96,329,96,321,96,313,96,305,95,297,95,289,95,282,94,274,93,266,92,258,90,250,87,243,85,235,82,228,82,221,86,215,93,212,101,210,109,210,116,209,124,208,132,207,140,205,148,203,155,201,163,199,170,196,178,193,185,189,192,186,199,182,205,178,212,173,217,167,222,161,227,155,233,149,239,144,245,139,251,134,257,129,264,126,272,124,279,121,287,118,294,115,301,111,308,107,315,103,321,99,327,94,332,88,334,80,334,73,332,65,328,58,325,51,322,44,321,37,324,30,331,26,338,24,346,23,353,21,360,16,366,12,373,7,380,3,387,0,394,0,401,3,407,8,413,13,417,20,420,27,422,35,423,42,428,46,435,45,442,43,450,43,458,44,465,47,473,50,480,54,487,57,494,60,501,59,508,55,514,50,520,45,527,43,535,43,543,44,551,46,558,47,566,48,574,49,582,50,590,50,598,51,606,51,614,51,622,52,629,54,633,60,634,67,633,75,631,82,627,90,623,96,620,103,617,111,615,118,615,126,616,134,618,141,622,148,627,155,632,161,637,167,643,172,649,177,655,182,663,185,670,187,678,190,685,193,692,197,699,201,705,206,711,211,717,216,723,222,728,228,733,234,737,240,742,247,748,253,753,258,760,261,768,263,776,263,784,263,792,262,800,262,808,261,815,260,823,261,831,262,839,263,846,266,852,271,858,276,860,283,858,289,851,293,844,294,836,294,828,295,825,297,830,298,837,298,845,297,853,296,861,296,869,297,877,297,885,298,892,296,898,291,904,285,908,279,913,273,920,268,927,266,935,266,942,268,949,272,955,277,961,282,967,288,972,294,977,300,982,306,987,312,991,319,996,325,999,333,1000,340,999,348,997,355,993,363,989,369,986,376,986,384,988,391,992,398,995,405,997,413,996,420,993,428,988,433,981,435,973,436,965,435,958,432,950,429,943,428,935,429,928,433,922,438,917,444,912,450,908,457,904,464,900,471,895,477,889,482,882,484,874,485,866,485,858,485,851,486,844,490,838,496,832,500,825,505,818,508,811,511,803,514,796,516,788,517,780,519,772,520,764,520,757,520,749,519,741,517,733,514,726,511,719,508,712,504,706,499,699,495,692,492,685,491,678,495,675,501,677,508,681,515,686,521,691,527,697,533,701,539,705,546,706,553,704,560,699,566,692,571,685,575,678,578,671,581,663,583,656,585,648,587,640,588,632,590,624,591,616,591,609,592,601,593,593,593,585,594,577,594,569,595,561,596,553,596,545,597,537,597,530,597,522,598,514,598,506,599,498,600,490,600,482,601,474,601,466,602,459,603,451,604,443,605,435,606,427,607,419,608,411,609,404,610,396,612,388,613,380,615,372,617,365,618,357,620,349,623,342,625,334,627,327,630,320,633,312,636,305,639,298,643,291,647,284,650,277,654,270,657,262,660]},
+  interlagos:{name:"Demo track (Clockwise)",hw:.032,sectors:[.22,.8],pts:[428,619,416,620,405,620,393,621,382,622,371,622,359,623,348,623,337,624,325,625,314,625,302,626,291,627,280,627,268,628,257,629,246,630,234,630,223,630,211,630,200,630,189,629,177,627,166,625,155,622,145,617,135,612,125,607,116,600,107,592,99,584,92,576,85,567,79,557,74,547,69,536,66,525,64,514,63,503,62,492,62,480,63,469,64,458,66,446,68,435,67,424,63,415,55,407,45,401,35,396,25,391,15,384,7,377,2,368,0,357,2,346,7,336,14,327,22,319,30,311,39,304,48,297,58,291,67,284,77,278,86,272,96,265,105,259,115,253,124,247,134,241,144,235,153,229,163,222,173,216,182,210,192,204,202,199,211,193,221,187,231,180,240,174,250,168,260,162,269,156,279,150,288,144,298,137,308,131,317,125,327,119,336,113,346,107,356,101,365,94,375,88,385,82,394,77,404,71,414,65,424,59,434,54,444,48,454,43,464,38,475,34,485,30,496,26,507,23,518,21,530,19,541,18,552,17,564,16,575,15,586,14,598,13,609,12,620,11,632,10,643,8,654,8,666,6,677,5,688,5,700,3,711,3,723,2,734,1,745,0,757,0,768,0,779,0,791,1,802,2,813,3,825,5,836,8,846,12,856,17,866,24,875,30,884,38,892,45,901,53,909,61,917,69,925,77,932,86,939,95,946,104,953,113,959,123,965,132,971,142,977,152,982,162,987,172,992,182,996,193,999,204,1000,215,1000,227,1000,238,1000,249,1000,261,999,272,998,284,997,295,994,306,988,315,980,321,969,323,958,323,946,322,935,320,924,317,913,315,902,312,891,309,880,306,869,304,858,301,847,298,836,295,825,292,814,289,803,285,792,281,782,276,773,270,764,263,756,254,750,245,745,235,741,224,738,213,736,202,735,191,736,180,738,168,742,158,746,147,751,137,757,127,763,117,769,107,774,98,780,88,785,78,789,67,789,56,785,46,777,40,767,39,756,42,745,46,735,52,726,57,716,64,707,71,699,79,691,87,684,95,677,104,670,114,664,124,659,134,654,144,649,154,644,164,637,173,630,182,621,188,610,192,599,193,588,190,578,185,570,177,565,168,562,157,561,146,563,135,566,124,569,113,570,102,568,91,562,83,553,77,542,76,531,77,520,81,510,86,500,91,489,96,479,101,469,106,459,112,449,117,440,123,430,130,422,137,415,146,409,156,405,166,402,177,401,189,401,200,402,211,404,222,407,234,411,244,416,254,423,263,431,271,440,277,450,283,461,287,471,291,482,295,493,298,504,301,515,305,526,308,537,312,548,315,558,319,569,322,580,326,591,329,602,332,613,336,624,339,635,343,645,346,656,349,667,353,678,356,689,360,700,363,711,367,721,370,732,374,743,378,753,382,764,387,773,393,783,400,791,407,799,415,806,424,812,434,816,444,820,455,824,466,827,477,829,488,830,500,832,511,833,522,834,533,835,545,836,556,834,567,830,577,822,585,813,591,802,595,791,597,780,600,769,601,757,602,746,602,734,603,723,604,712,604,700,604,689,604,678,605,666,606,655,607,643,607,632,608,621,609,609,609,598,610,587,610,575,611,564,612,553,612,541,613,530,614,518,614,507,615,496,615,484,616,473,617,462,617,450,617,439,618]}
+};
+function buildTrack(w,h,shape){
+  const raw=shape.pts,P0=[];
+  for(let i=0;i<raw.length;i+=2)P0.push([raw[i],raw[i+1]]);
+  const xs=P0.map(p=>p[0]),ys=P0.map(p=>p[1]),mnx=Math.min(...xs),mny=Math.min(...ys),sx=Math.max(...xs)-mnx,sy=Math.max(...ys)-mny;
+  const pad=Math.min(w,h)*.11,s=Math.min((w-2*pad)/sx,(h-2*pad)/sy),ox=(w-sx*s)/2,oy=(h-sy*s)/2;
+  const P=P0.map(([x,y])=>[ox+(x-mnx)*s,oy+(y-mny)*s]);
+  const pts=[],n=P.length,per=3;
   for(let i=0;i<n;i++){
     const p0=P[(i-1+n)%n],p1=P[i],p2=P[(i+1)%n],p3=P[(i+2)%n];
     for(let k=0;k<per;k++){
@@ -930,29 +944,38 @@ function buildTrack(w,h){
       pts.push([0,1].map(j=>.5*((2*p1[j])+(-p0[j]+p2[j])*t+(2*p0[j]-5*p1[j]+4*p2[j]-p3[j])*t2+(-p0[j]+3*p1[j]-3*p2[j]+p3[j])*t3)));
     }
   }
-  const N=pts.length,nor=[];
+  const N=pts.length,nor=[],m=4;
   for(let i=0;i<N;i++){
-    const a=pts[(i-1+N)%N],b=pts[(i+1)%N],dx=b[0]-a[0],dy=b[1]-a[1],l=Math.hypot(dx,dy)||1;
+    const a=pts[(i-m+N)%N],b=pts[(i+m)%N],dx=b[0]-a[0],dy=b[1]-a[1],l=Math.hypot(dx,dy)||1;
     nor.push([-dy/l,dx/l]);
   }
-  return {pts,nor,N,hw:Math.max(7,Math.min(w,h)*.034)};
+  return {pts,nor,N,hw:Math.max(3.5,Math.min(w,h)*shape.hw),name:shape.name,sectors:shape.sectors||[1/3,2/3]};
 }
-function setupCanvas(cv){
+function setupCanvas(cv,shape){
   const dpr=Math.min(window.devicePixelRatio||1,2),w=Math.max(280,cv.clientWidth),h=w/1.45;
   cv.width=Math.round(w*dpr);cv.height=Math.round(h*dpr);
   const ctx=cv.getContext("2d");ctx.setTransform(dpr,0,0,dpr,0,0);
-  return {ctx,w,h,track:buildTrack(w,h)};
+  return {ctx,w,h,shape,track:buildTrack(w,h,shape)};
 }
-function offsetAt(lap,s){return lap.amp*(lap.bias+(1-Math.abs(lap.bias))*(.62*Math.sin(2*Math.PI*3*s+lap.p1)+.38*Math.sin(2*Math.PI*7*s+lap.p2)))}
+function offsetAt(lap,s){
+  let o=lap.amp*(lap.bias+(1-Math.abs(lap.bias))*(.62*Math.sin(2*Math.PI*3*s+lap.p1)+.38*Math.sin(2*Math.PI*7*s+lap.p2)));
+  if(lap.sev>0&&lap.hw){
+    const H=lap.hw*lap.sev;
+    o+=H*.3*(.6*Math.sin(2*Math.PI*19*s+lap.p3)+.4*Math.sin(2*Math.PI*41*s+lap.p4));
+    for(const m of lap.mis){let d=Math.abs(s-m.c);d=Math.min(d,1-d);if(d<m.w*3)o+=H*m.a*Math.exp(-(d/m.w)*(d/m.w))}
+    o=Math.max(-lap.hw*1.3,Math.min(lap.hw*1.3,o));
+  }
+  return o;
+}
 function trace(ctx,T,lap,upto){
-  const {pts,nor,N}=T,end=Math.floor((upto==null?1:upto)*N);
+  const {pts,nor,N}=T,end=Math.max(0,Math.floor((upto==null?1:Math.min(1,Math.max(0,upto)))*N));
   ctx.beginPath();
   for(let i=0;i<=end&&i<=N;i++){
     const k=i%N,o=offsetAt(lap,k/N),x=pts[k][0]+nor[k][0]*o,y=pts[k][1]+nor[k][1]*o;
     i?ctx.lineTo(x,y):ctx.moveTo(x,y);
   }
   ctx.stroke();
-  const k=Math.min(end,N-1),o=offsetAt(lap,k/N);
+  const k=Math.max(0,Math.min(end,N-1)),o=offsetAt(lap,k/N);
   return [pts[k][0]+nor[k][0]*o,pts[k][1]+nor[k][1]*o];
 }
 function drawBase(S){
@@ -981,16 +1004,22 @@ function drawBase(S){
     ctx.fillStyle=C.muted;ctx.font="500 10px 'Martian Mono', ui-monospace, monospace";ctx.textAlign="center";ctx.textBaseline="middle";
     ctx.fillText(lab,p[0]+n[0]*(hw+16),p[1]+n[1]*(hw+16));
   };
-  mark(0,"S/F",true);mark(Math.floor(N/3),"S1",false);mark(Math.floor(2*N/3),"S2",false);
+  mark(0,"S/F",true);mark(Math.floor(N*T.sectors[0]),"S1",false);mark(Math.floor(N*T.sectors[1]),"S2",false);
+  ctx.fillStyle=C.muted;ctx.font="500 10px 'Martian Mono', ui-monospace, monospace";ctx.textAlign="left";ctx.textBaseline="top";
+  ctx.fillText(T.name.toUpperCase(),14,14);
 }
 function makeLaps(times,seed){
   const s=stats(times),r=rng(seed);
   return times.map(t=>{
     const rel=(t-s.avg)/s.avg;
-    return {t,amp:0,mag:Math.min(1,Math.abs(rel)/0.012),bias:Math.max(-.6,Math.min(.6,rel/0.012*.6)),p1:r()*6.283,p2:r()*6.283};
+    //sev: how much slower than average this lap was (0 = clean, 1 = a messy lap)
+    const sev=Math.min(1,Math.max(0,rel)/0.012),mis=[];
+    const count=sev>.15?1+Math.floor(r()*(1+3*sev)):0;
+    for(let i=0;i<count;i++)mis.push({c:r(),w:.006+r()*.014,a:(r()<.5?-1:1)*(.55+.45*r())});
+    return {t,amp:0,mag:Math.min(1,Math.abs(rel)/0.012),bias:Math.max(-.6,Math.min(.6,rel/0.012*.6)),p1:r()*6.283,p2:r()*6.283,p3:r()*6.283,p4:r()*6.283,sev,mis,hw:0};
   });
 }
-function scaleLaps(laps,T){laps.forEach(l=>l.amp=T.hw*.92*Math.max(.07,l.mag))}
+function scaleLaps(laps,T){laps.forEach(l=>{l.amp=T.hw*.92*Math.max(.07,l.mag);l.hw=T.hw})}
 function lapStyle(ctx,l,s){
   if(l.t===s.min){ctx.strokeStyle=C.violet;ctx.globalAlpha=1;ctx.lineWidth=2}
   else if(l.t===s.max){ctx.strokeStyle=C.amber;ctx.globalAlpha=.95;ctx.lineWidth=1.6}
@@ -1110,64 +1139,82 @@ if(CONFIG.instagramUrl){
 })();
 
 
-//Hero simulation
+//Hero simulation: one session of 10 laps, then the map waits for the visitor to run it again
 const Hero=(function(){
-  const cv=document.getElementById("hero-map");
-  let S=setupCanvas(cv),mode="steady",seed=7,laps,cur=0,lapStart=0,holdUntil=0,running=false,visible=true,raf=0,pausedAt=0;
+  const cv=document.getElementById("hero-map"),wrap=document.getElementById("h-wrap"),replay=document.getElementById("h-replay"),replayLabel=document.getElementById("h-replay-label");
+  let S=setupCanvas(cv,TRACKS.nordschleife),mode="steady",seed=7,laps,cur=0,q=0,lapStart=null,lastNow=0,running=false,visible=true,raf=0,ended=false,started=false;
+  //Simulated Nordschleife laps around 7:31; each lap is animated in 2 seconds
+  const BASE=451,LAP_MS=2000,dur=t=>t/BASE*LAP_MS;
   const el={lap:document.getElementById("h-lap"),time:document.getElementById("h-time"),range:document.getElementById("h-range"),cv:document.getElementById("h-cv")};
   function session(){
-    const r=rng(seed*977+(mode==="steady"?1:2)),sig=mode==="steady"?0.075:0.42;
-    laps=makeLaps(Array.from({length:10},()=>+(41.5+sig*gauss(r)).toFixed(3)),seed);scaleLaps(laps,S.track);
+    const r=rng(seed*977+(mode==="steady"?1:2)),sig=(mode==="steady"?0.075:0.42)*BASE/41.5;
+    laps=makeLaps(Array.from({length:10},()=>+(BASE+sig*gauss(r)).toFixed(3)),seed);scaleLaps(laps,S.track);
   }
   function summary(n){
     const done=laps.slice(0,n).map(l=>l.t);
     if(done.length<2){el.range.textContent="-";el.cv.textContent="-";return}
     const s=stats(done);el.range.textContent=(s.max-s.min).toFixed(3)+"s";el.cv.textContent=s.cv.toFixed(3)+"%";
   }
+  function showStart(){cur=0;q=0;drawLaps(S,laps,0,{p:0});el.lap.textContent="01/10";el.time.textContent=fmt(0);summary(0)}
   function showComplete(){cur=10;drawLaps(S,laps,10);el.lap.textContent="10/10";el.time.textContent=fmt(laps[9].t);summary(10)}
+  function finish(){
+    if(raf)cancelAnimationFrame(raf);raf=0;
+    running=false;ended=true;showComplete();
+    replayLabel.textContent="Run the session again";
+    wrap.classList.add("ended");
+  }
   function frame(now){
-    raf=0;if(!visible||document.hidden){running=false;pausedAt=now;return}
-    if(holdUntil){
-      if(now<holdUntil){raf=requestAnimationFrame(frame);return}
-      holdUntil=0;seed++;session();cur=0;lapStart=now;summary(0);
-    }
-    if((now-lapStart)/(laps[cur].t*38)>=1){
-      cur++;lapStart=now;summary(cur);
-      if(cur>=10){showComplete();holdUntil=now+3200;raf=requestAnimationFrame(frame);return}
-    }
-    const q=Math.min(1,(now-lapStart)/(laps[cur].t*38));
-    drawLaps(S,laps,cur,{p:q});
-    el.lap.textContent=String(cur+1).padStart(2,"0")+"/10";
-    el.time.textContent=fmt(laps[cur].t*q);
+    raf=0;
+    //start and pauses are measured on the animation clock only
+    if(lapStart===null)lapStart=now;
+    else if(lastNow&&now-lastNow>250)lapStart+=now-lastNow-16;
+    lastNow=now;
+    try{
+      if((now-lapStart)/dur(laps[cur].t)>=1){
+        cur++;lapStart=now;summary(cur);
+        if(cur>=10){finish();return}
+      }
+      q=Math.max(0,Math.min(1,(now-lapStart)/dur(laps[cur].t)));
+      drawLaps(S,laps,cur,{p:q});
+      el.lap.textContent=String(cur+1).padStart(2,"0")+"/10";
+      el.time.textContent=fmt(laps[cur].t*q);
+    }catch(e){console.error(e)}
     raf=requestAnimationFrame(frame);
   }
-  function start(){
-    if(REDUCE||running)return;running=true;
-    if(!raf)raf=requestAnimationFrame(t=>{
-      if(pausedAt){const gap=t-pausedAt;lapStart+=gap;if(holdUntil)holdUntil+=gap;pausedAt=0}
-      if(!holdUntil&&cur>=10)holdUntil=t+4000;
-      frame(t);
-    });
+  function run(){
+    ended=false;started=true;wrap.classList.remove("ended");
+    seed++;session();showStart();
+    lapStart=null;lastNow=0;
+    if(raf)cancelAnimationFrame(raf);
+    running=true;raf=requestAnimationFrame(frame);
+  }
+  function autoStart(){
+    if(started||REDUCE||ROOT.getAttribute("data-intro")==="on"||!visible||document.hidden)return;
+    run();
   }
   function setMode(m){
     mode=m;document.getElementById("m-steady").setAttribute("aria-pressed",m==="steady");document.getElementById("m-wild").setAttribute("aria-pressed",m!=="steady");
-    session();showComplete();if(!REDUCE)holdUntil=performance.now()+900;
+    if(REDUCE){seed++;session();finish();return}
+    run();
   }
   document.getElementById("m-steady").addEventListener("click",()=>setMode("steady"));
   document.getElementById("m-wild").addEventListener("click",()=>setMode("wild"));
-  session();showComplete();
-  new IntersectionObserver(es=>{visible=es[0].isIntersecting;if(visible)start()}).observe(cv);
-  document.addEventListener("visibilitychange",()=>{if(!document.hidden&&visible)start()});
-  function redraw(){if(cur>=10||!running)drawLaps(S,laps,Math.min(cur,10))}
-  let rt;window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{S=setupCanvas(cv);scaleLaps(laps,S.track);redraw()},120)});
-  start();
+  replay.addEventListener("click",run);
+  session();
+  if(REDUCE){finish();replayLabel.textContent="Run the session"}else showStart();
+  new IntersectionObserver(es=>{visible=es[es.length-1].isIntersecting;if(visible)autoStart()}).observe(cv);
+  document.addEventListener("visibilitychange",()=>{if(!document.hidden)autoStart()});
+  new MutationObserver(autoStart).observe(ROOT,{attributes:true,attributeFilter:["data-intro"]});
+  requestAnimationFrame(()=>{const r=cv.getBoundingClientRect();visible=r.bottom>0&&r.top<innerHeight;autoStart()});
+  function redraw(){if(cur>=10)drawLaps(S,laps,10);else drawLaps(S,laps,cur,{p:q})}
+  let rt;window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{S=setupCanvas(cv,TRACKS.nordschleife);scaleLaps(laps,S.track);redraw()},120)});
   return {redraw};
 })();
 
 //Lap test
 const Lab=(function(){
   const list=document.getElementById("lap-list"),inputs=[],cv=document.getElementById("lab-map");
-  let S=setupCanvas(cv),last=null;
+  let S=setupCanvas(cv,TRACKS.interlagos),last=null;
   for(let i=0;i<10;i++){
     const row=document.createElement("div");row.className="lapin";
     const id="lap-"+(i+1);
@@ -1203,7 +1250,7 @@ const Lab=(function(){
   out("b-clear").addEventListener("click",()=>{inputs.forEach(i=>{i.value="";i.classList.remove("bad")});out("ex-tag").hidden=true;out("lap-msg").textContent="";blank();inputs[0].focus()});
   out("b-ex").addEventListener("click",example);
   function redraw(){if(last)drawLaps(S,last,last.length);else drawBase(S)}
-  let rt;window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{S=setupCanvas(cv);if(last)scaleLaps(last,S.track);redraw()},120)});
+  let rt;window.addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(()=>{S=setupCanvas(cv,TRACKS.interlagos);if(last)scaleLaps(last,S.track);redraw()},120)});
   example();
   return {redraw};
 })();
