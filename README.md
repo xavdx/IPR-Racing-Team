@@ -1,6 +1,8 @@
-# IPR Racing:
+# IPR Racing Team
 
-**IPR Racing Team. _OUTRACE THE ODDS_** A rental karting team where results come purely from your on track performance, never through bias, connections or politics.
+_OUTRACE THE ODDS_
+
+A rental karting team where results come purely from your on track performance, never through bias, connections or politics.
 
 Website: [iprracingteam.in](https://www.iprracingteam.in)
 Email: the.iprracing@gmail.com
