@@ -450,8 +450,8 @@ html[data-intro="on"]{overflow:hidden}
 #intro.i-poster-on .i-poster,#intro.i-video-on .i-video{opacity:1}
 .i-scrim{position:absolute;inset:0;z-index:3;background:radial-gradient(ellipse at 50% 50%,rgba(7,8,11,.15),rgba(7,8,11,.6) 75%),linear-gradient(to top,rgba(7,8,11,.8),rgba(7,8,11,0) 38%)}
 .i-center{position:absolute;inset:0;z-index:4;display:grid;place-content:center;justify-items:center;gap:clamp(18px,3vh,30px);text-align:center;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
-.i-word{display:block;height:clamp(20px,2.6vw,30px);width:auto;color:#fff;opacity:0;transition:opacity 1.2s ease .9s}
-.i-line{margin:0;font-family:var(--display);font-stretch:62%;font-weight:800;font-size:clamp(3.6rem,12.5vw,10.5rem);line-height:.86;letter-spacing:-.005em;word-spacing:.08em;text-transform:uppercase;text-wrap:balance;color:#fff;text-shadow:0 2px 40px rgba(0,0,0,.35)}
+.i-word{display:block;height:clamp(60px,2.6vw,30px);width:auto;color:#fff;opacity:0;transition:opacity 1.2s ease .9s}
+.i-line{margin:0;font-family:var(--display);font-stretch:62%;font-weight:800;font-size:clamp(2.0rem,12.5vw,8.5rem);line-height:.86;letter-spacing:-.005em;word-spacing:.08em;text-transform:uppercase;text-wrap:balance;color:#fff;text-shadow:0 2px 40px rgba(0,0,0,.35)}
 .i-line span{display:inline-block;opacity:0;transform:translateY(.14em);filter:blur(10px);transition:opacity 1.1s ease,transform 1.4s cubic-bezier(.2,.7,.2,1),filter 1.2s ease}
 .i-line span:nth-child(2){transition-delay:.22s}
 .i-line span:nth-child(3){transition-delay:.44s;color:#8f6bff}
@@ -480,7 +480,8 @@ html[data-intro="on"]{overflow:hidden}
   <div class="i-scrim" aria-hidden="true"></div>
   <div class="i-center">
     <svg class="i-word" viewBox="0 0 1165.0 326.0" aria-hidden="true"><use href="#ipr-word"/></svg>
-    <p class="i-line"><span>Outrace</span> <span>the</span> <span>Odds</span></p>
+    <p class="i-line"><span>BY</span> <span>THE</span> <span>DRIVERS;</span></p>
+    <p class="i-line"><span>FOR</span> <span>THE</span> <span>DRIVERS.</span></p>
   </div>
   <div class="i-foot">
     <button type="button" class="i-skip" id="intro-skip" tabindex="-1">Click or press any key to skip</button>
