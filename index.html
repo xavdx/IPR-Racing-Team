@@ -60,7 +60,7 @@
   --inv-muted:#9da1ac;
   --inv-soft:#c9ccd3;
   --inv-rule:#2c2f37;
-  --ghost:#e3e5ea;
+  --ghost:#1c1e25;
   --display:"Archivo","Arial Narrow","Helvetica Neue",Arial,sans-serif;
   --body:"Archivo","Helvetica Neue",Arial,sans-serif;
   --mono:"Martian Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
@@ -98,7 +98,7 @@
   --inv-muted:#a3a0b4;
   --inv-soft:#cfcbe0;
   --inv-rule:#2b2738;
-  --ghost:#171a22;
+  --ghost:#221d33;
   color-scheme:dark}}
 :root[data-mode="night"],:root[data-theme="dark"]:not([data-mode="day"]){
   --paper:#0b0d11;
@@ -130,7 +130,7 @@
   --inv-muted:#a3a0b4;
   --inv-soft:#cfcbe0;
   --inv-rule:#2b2738;
-  --ghost:#171a22;
+  --ghost:#221d33;
   color-scheme:dark}
 :root[data-mode="day"]{color-scheme:light}
 *{box-sizing:border-box}
@@ -420,22 +420,21 @@ shows a copy of each logo with its white background removed and its dark ink lig
 @media (max-width:600px){.plogo{flex-basis:50%;height:140px}}
 
 /*Entry*/
-/*Section 06 uses the page's own colours, like the sections above; only the footer stays dark*/
-.entry{color:var(--ink);position:relative;overflow:hidden;padding-block:0}
+.entry{background:var(--inv);color:var(--inv-ink);position:relative;overflow:hidden;padding-block:0;transition:background-color .4s var(--ease)}
 .entry .wrap{position:relative;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:48px;align-items:end;padding-block:110px}
-.entry h2{font-size:clamp(3.6rem,11vw,9rem);line-height:.9;color:var(--ink)}
+.entry h2{font-size:clamp(3.6rem,11vw,9rem);line-height:.9;color:var(--inv-ink)}
 .entry h2 em{font-style:normal;color:var(--violet)}
-.entry .label{color:var(--muted)}
-.entry ul{list-style:none;margin:0;padding:0;border-top:2px solid var(--ink)}
-.entry li{padding:16px 0;font-size:clamp(1.02rem,1.35vw,1.22rem);line-height:1.35;border-bottom:1px solid var(--rule);display:grid;grid-template-columns:2.6em 1fr;color:var(--ink-2);transition:color .25s var(--ease),padding-left .35s var(--ease)}
-.entry li:hover{color:var(--ink);padding-left:8px}
+.entry .label{color:var(--inv-muted)}
+.entry ul{list-style:none;margin:0;padding:0;border-top:1px solid var(--inv-rule)}
+.entry li{padding:16px 0;font-size:clamp(1.02rem,1.35vw,1.22rem);line-height:1.35;border-bottom:1px solid var(--inv-rule);display:grid;grid-template-columns:2.6em 1fr;color:var(--inv-soft);transition:color .25s var(--ease),padding-left .35s var(--ease)}
+.entry li:hover{color:var(--inv-ink);padding-left:8px}
 .entry li span{font-family:var(--mono);font-stretch:85%;font-size:.72rem;color:var(--violet);padding-top:.3em}
 .entry .btn{background:var(--violet);border-color:var(--violet);color:#fff;margin-top:32px;padding:20px 30px;font-size:clamp(.85rem,1.1vw,1rem)}
 .entry .btn svg{width:18px;height:18px}
-.entry .btn::before{background:var(--ink)}
-.entry .btn:hover{color:var(--paper);border-color:var(--ink)}
+.entry .btn::before{background:var(--inv-ink)}
+.entry .btn:hover{color:var(--inv);border-color:var(--inv-ink)}
 .entry .btn[aria-disabled="true"]:hover{color:#fff;border-color:var(--violet)}
-.entry .soon{margin-top:14px;font-family:var(--mono);font-stretch:85%;font-size:.85rem;color:var(--muted)}
+.entry .soon{margin-top:14px;font-family:var(--mono);font-stretch:85%;font-size:.85rem;color:var(--inv-muted)}
 .entry .ghost{position:absolute;right:3%;top:50%;transform:translateY(-50%);width:min(780px,62vw);color:var(--ghost);pointer-events:none;transition:transform 1.2s var(--ease),color .4s var(--ease)}
 @media (hover:hover) and (min-width:861px){.entry:hover .ghost{transform:translateY(-50%) translateX(-24px)}}
 @media (max-width:860px){.entry .ghost{right:auto;left:50%;width:min(560px,92vw);transform:translate(-50%,-50%)}}
@@ -494,24 +493,24 @@ mirrors around the centre of the screen and never runs past its edges*/
 /*Contact, at the foot of section 06. The grid gets a class n2, n3 or n4 from the number of cards.*/
 .entry .wrap.entry-main{padding-block:96px 56px}
 .entry .wrap.contact{display:block;padding-block:0 80px}
-.contact-head{display:grid;gap:16px;padding-top:52px;border-top:1px solid var(--rule);margin-bottom:32px}
-.contact-head h3{font-size:clamp(2.6rem,5.6vw,4.4rem);font-stretch:62%;font-weight:800;line-height:.92;letter-spacing:-.01em;word-spacing:.12em;color:var(--ink);margin:0}
-.contact-head p{color:var(--ink-2);font-size:clamp(1.02rem,1.3vw,1.2rem);line-height:1.5;max-width:54ch}
+.contact-head{display:grid;gap:16px;padding-top:52px;border-top:1px solid var(--inv-rule);margin-bottom:32px}
+.contact-head h3{font-size:clamp(2.6rem,5.6vw,4.4rem);font-stretch:62%;font-weight:800;line-height:.92;letter-spacing:-.01em;word-spacing:.12em;color:var(--inv-ink);margin:0}
+.contact-head p{color:var(--inv-soft);font-size:clamp(1.02rem,1.3vw,1.2rem);line-height:1.5;max-width:54ch}
 .cgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
 .cgrid.n3{grid-template-columns:repeat(3,minmax(0,1fr))}
 .cgrid.n4{grid-template-columns:repeat(4,minmax(0,1fr))}
-.ccard{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:14px;min-width:0;padding:clamp(22px,2.4vw,32px);border:1px solid var(--rule);background:var(--sheet);transition:border-color .3s var(--ease),background-color .4s var(--ease),transform .35s var(--ease),box-shadow .35s var(--ease)}
-.ccard:hover{border-color:var(--violet);transform:translateY(-3px);box-shadow:0 1px 0 var(--rule),0 30px 60px -40px var(--shadow)}
-.ccard .label{color:var(--muted);font-size:.74rem;padding-right:40px}
+.ccard{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:14px;min-width:0;padding:clamp(22px,2.4vw,32px);border:1px solid var(--inv-rule);background:rgba(255,255,255,.02);transition:border-color .3s var(--ease),background-color .3s var(--ease),transform .35s var(--ease)}
+.ccard:hover{border-color:var(--violet);background:rgba(143,107,255,.06);transform:translateY(-3px)}
+.ccard .label{color:var(--inv-muted);font-size:.74rem;padding-right:40px}
 .cico{position:absolute;top:clamp(18px,2.1vw,28px);right:clamp(18px,2.1vw,28px);width:26px;height:26px;color:var(--violet);transition:transform .35s var(--ease)}
 .cico svg{display:block;width:100%;height:100%}
 .ccard:hover .cico{transform:translateY(-2px) rotate(-6deg)}
-.cval{max-width:100%;font-family:var(--display);font-stretch:75%;font-weight:700;font-size:clamp(1.6rem,2.7vw,2.25rem);line-height:1.1;color:var(--ink);overflow-wrap:anywhere;text-decoration:none;transition:color .25s var(--ease)}
+.cval{max-width:100%;font-family:var(--display);font-stretch:75%;font-weight:700;font-size:clamp(1.6rem,2.7vw,2.25rem);line-height:1.1;color:var(--inv-ink);overflow-wrap:anywhere;text-decoration:none;transition:color .25s var(--ease)}
 a.cval:hover{color:var(--violet)}
-.cval.dim{color:var(--muted)}
+.cval.dim{color:var(--inv-muted)}
 #c-email{font-size:clamp(1.3rem,2.15vw,1.85rem);overflow-wrap:break-word}
 .cacts{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:8px}
-.clink{display:inline-flex;align-items:center;padding:10px 16px;border:1px solid var(--ink);background:none;color:var(--ink);font-family:var(--mono);font-stretch:85%;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:color .25s var(--ease),border-color .25s var(--ease),background-color .25s var(--ease)}
+.clink{display:inline-flex;align-items:center;padding:10px 16px;border:1px solid var(--inv-rule);background:none;color:var(--inv-soft);font-family:var(--mono);font-stretch:85%;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:color .25s var(--ease),border-color .25s var(--ease),background-color .25s var(--ease)}
 .clink:hover{color:#fff;border-color:var(--violet);background:var(--violet)}
 .cgrid.n4 .cval{font-size:clamp(1.3rem,1.8vw,1.6rem)}
 .cgrid.n4 #c-email{font-size:clamp(1.02rem,1.25vw,1.2rem)}
@@ -1064,7 +1063,7 @@ const CONFIG={
 //logo), e.g. logoNight:"Sponsors/Vyas-white.png". Without it, night mode builds one from "logo".
 //Paths are case-sensitive once the site is online: "Sponsors/..." needs a folder named exactly Sponsors.
 const SPONSORS=[
-  {name:"Berakah Studios",logo:"Sponsors/Berakah.png",url:"https://linktr.ee/Berakah_Studios",scale:1},
+  {name:"Berakah Studios",logo:"Sponsors/Berakah.png",url:"https://youtube.com/@berakahmusic2820",scale:1},
   {name:"Sam'D Learning Technologies",logo:"Sponsors/Samd.png",url:"https://samthegenie.com/",scale:1},
   {name:"Racing Simplified",logo:"Sponsors/racingsim.png",url:"https://www.instagram.com/racingsimplified",scale:1},
   {name:"Favgreen",logo:"Sponsors/favgreen.png",url:"https://favgreen.co/",scale:1},
@@ -1686,7 +1685,12 @@ const Live=(function(){
     let ticks="",tachy="",idx="";
     for(let i=0;i<60;i++){const a=i*6,[x1,y1]=P(i%5?129:124,a),[x2,y2]=P(134,a);ticks+='<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="#cfd0dc" stroke-opacity="'+(i%5?.45:.9)+'" stroke-width="'+(i%5?1:1.6)+'"/>'}
     //Tachymeter: speed = 3600 / seconds, so each value sits at 3600/value seconds round the bezel
-    [500,400,300,250,200,180,160,150,140,130,120,110,100,90,80,70,60].forEach(v=>{
+    const TQ=[500,400,300,250,200,180,160,150,140,130,120,110,100,90,80,70,60],TM=[];
+    //In-between graduations: every 25 above 300, 10 from 200 to 300, 5 from 100 to 200, 2 below 100
+    for(let v=325;v<500;v+=25)TM.push(v);for(let v=210;v<300;v+=10)TM.push(v);for(let v=105;v<200;v+=5)TM.push(v);for(let v=62;v<100;v+=2)TM.push(v);
+    TM.filter(v=>!TQ.includes(v)).forEach(v=>{const a=3600/v*6,[x1,y1]=P(141,a),[x2,y2]=P(143.6,a);tachy+='<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="#e9e9ef" stroke-opacity=".75" stroke-width=".8"/>'});
+    tachy+='<path id="wg-tq" d="M200 128 A152 152 0 1 1 199.99 128" fill="none"/><text font-size="6.6" font-weight="600" letter-spacing="1.6" fill="#e9e9ef" fill-opacity=".85" font-family="Martian Mono, ui-monospace, monospace" dominant-baseline="middle"><textPath href="#wg-tq" startOffset="57.30" text-anchor="middle">TACHYMETER</textPath></text>';
+    TQ.forEach(v=>{
       const a=3600/v*6,[x1,y1]=P(141,a),[x2,y2]=P(145.5,a);
       tachy+='<line x1="'+x1.toFixed(1)+'" y1="'+y1.toFixed(1)+'" x2="'+x2.toFixed(1)+'" y2="'+y2.toFixed(1)+'" stroke="#e9e9ef" stroke-width="1.4"/>';
       const flip=a>90&&a<270?' rotate(180 200 128)':'';
